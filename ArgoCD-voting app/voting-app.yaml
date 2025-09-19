@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://dev.azure.com/VenkateshKalluri/ArgoCD-voting%20app/_git/ArgoCD-voting%20app?path=%2F&version=GBmain&_a=contents'
+    repoURL: 'https://github.com/venkatesh-neu/Voting-app.git'
     targetRevision: main
     path: .
   destination:
