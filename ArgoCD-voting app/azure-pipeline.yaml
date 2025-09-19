@@ -16,7 +16,7 @@ stages:
     steps:
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'argocd_sc'
+        azureSubscription: 'venkatesh-neu'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
