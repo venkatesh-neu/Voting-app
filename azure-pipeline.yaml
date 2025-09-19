@@ -9,7 +9,7 @@ pool:
 variables:
   ACR_NAME: argocdregistry
   ACR_LOGIN_SERVER: argocdregistry.azurecr.io
-  IMAGE_NAME: voting-app
+  IMAGE_NAME: voting-app   # change to worker-app if building worker service
 
 stages:
 - stage: BuildAndPush
@@ -17,11 +17,11 @@ stages:
   - job: DockerBuild
     steps:
     - checkout: self
-      persistCredentials: true   # ✅ allows push back to repo
+      persistCredentials: true   # ✅ allows Git push to repo
 
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'argocd_sc'
+        azureSubscription: 'argocd_sc'   # replace with your ACR service connection
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -29,7 +29,8 @@ stages:
           az acr login --name $(ACR_NAME)
 
           echo "Building Docker image..."
-          docker build -t $(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.BuildId) .
+          # 👉 Fix: specify correct Dockerfile path + context
+          docker build -f vote/Dockerfile -t $(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.BuildId) vote/
 
           echo "Pushing Docker image..."
           docker push $(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.BuildId)
