@@ -1,0 +1,34 @@
+trigger:
+- main  
+
+variables:
+  ACR_NAME: argocdregistry       
+  ACR_LOGIN_SERVER: argocdregistry.azurecr.io
+  IMAGE_NAME: worker-app
+
+stages:
+- stage: BuildAndPush
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  jobs:
+  - job: DockerBuild
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'argocd_sc'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Logging into ACR..."
+          az acr login --name $(ACR_NAME)
+
+          echo "Building Docker image..."
+          docker build -f worker/Dockerfile -t $(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.BuildId) worker/
+
+          echo "Pushing Docker image..."
+          docker push $(ACR_LOGIN_SERVER)/$(IMAGE_NAME):$(Build.BuildId)
+
+    - script: |
+        bash update_manifest.sh $(ACR_LOGIN_SERVER)/$(IMAGE_NAME) $(Build.BuildId)
+      displayName: Update Kubernetes manifest
