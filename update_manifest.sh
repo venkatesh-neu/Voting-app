@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-IMAGE_NAME=$1   # e.g. argocdregistry.azurecr.io/voting-app
-TAG=$2          # e.g. build ID
-BRANCH=$3       # e.g. main or dev
-MANIFEST_FILE="manifests/voting-app.yaml"  # adjust if your manifest is elsewhere
+IMAGE_NAME=$1
+TAG=$2
+BRANCH=$3
+MANIFEST_FILE="manifests/voting-app.yaml"   # 👈 FIXED path
 
 echo "Branch: $BRANCH"
 echo "Image: $IMAGE_NAME:$TAG"
@@ -16,14 +16,14 @@ if [ "$BRANCH" != "main" ]; then
   exit 0
 fi
 
-# 🔹 Update image in manifest
-sed -i "s|image: .*|image: $IMAGE_NAME:$TAG|g" $MANIFEST_FILE
+# 🔹 Update image in manifest (preserve indentation)
+sed -i "s|\(image:\s*\).*|\1$IMAGE_NAME:$TAG|g" $MANIFEST_FILE
 
 echo "Updated $MANIFEST_FILE with image $IMAGE_NAME:$TAG"
 
 # 🔹 Git config
-git config user.email "build-bot@yourorg.com"
-git config user.name "Build Bot"
+git config user.email "venkatesh.kalluri@neudesic.com"
+git config user.name "venkatesh kalluri"
 
 # 🔹 Commit & push changes
 git add $MANIFEST_FILE
@@ -33,3 +33,4 @@ else
   git commit -m "Update image to $IMAGE_NAME:$TAG"
   git push origin main
   echo "Changes pushed to main branch."
+fi
