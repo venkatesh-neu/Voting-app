@@ -1,18 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: worker-app
+  name: voting-app
   namespace: argocd
 spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: voting
   project: default
   source:
     repoURL: 'https://github.com/venkatesh-neu/Voting-app.git'
     targetRevision: main
-    path: .
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: voting
+    path: .  # Path to the actual app manifest
   syncPolicy:
     automated:
       prune: true
-      selfHeal: false
+      selfHeal: true
