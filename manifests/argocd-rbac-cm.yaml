@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+data:
+  policy.csv: |
+    # Map Azure AD groups to roles
+    g, <ADMIN_AAD_OBJECT_ID>, role:admin
+    g, <DEV_AAD_OBJECT_ID>, role:dev
+
+    # Define what each role can do
+    p, role:admin, applications, *, *, allow
+    p, role:dev, applications, get, *, allow
+    p, role:dev, applications, sync, *, allow
+
+  policy.default: role:readonly
