@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-of-apps
+  namespace: argocd
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  project: default
+  source:
+    repoURL: 'https://github.com/venkatesh-neu/Voting-app.git'  # This should point to your repo that contains app manifests
+    targetRevision: main
+    path: manifests/  # Path where all app manifests (child apps) reside
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
